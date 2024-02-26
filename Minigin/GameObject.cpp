@@ -45,12 +45,13 @@ void dae::GameObject::SetLocalPosition(glm::vec3 position)
 	SetLocalPosition(position.x, position.y);
 }
 
-glm::vec3 dae::GameObject::GetLocalPosition()
+glm::vec3 dae::GameObject::GetLocalPosition() const
 {
 	return m_LocalPosition;
 }
 
-glm::vec3 dae::GameObject::GetWorldPosition() {
+glm::vec3 dae::GameObject::GetWorldPosition() 
+{
 
 	if (HasPositionChanged()) {
 		UpdateWorldPosition();
@@ -58,7 +59,8 @@ glm::vec3 dae::GameObject::GetWorldPosition() {
 	return m_WorldPosition;
 }
 
-void dae::GameObject::UpdateWorldPosition() {
+void dae::GameObject::UpdateWorldPosition() 
+{
 	if (HasPositionChanged()) {
 		if (m_pParent) {
 			m_WorldPosition = m_pParent->GetWorldPosition() + m_LocalPosition;
@@ -70,7 +72,8 @@ void dae::GameObject::UpdateWorldPosition() {
 	m_PositionChanged = false;
 }
 
-bool dae::GameObject::HasPositionChanged() {
+bool dae::GameObject::HasPositionChanged() 
+{
 
 	if (m_pParent) {
 		m_PositionChanged = m_PositionChanged || m_pParent->HasPositionChanged();

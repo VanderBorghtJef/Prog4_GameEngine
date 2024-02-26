@@ -23,6 +23,6 @@ public:
 	bool IsMarkedForDestroy();
 
 protected:
-	const dae::GameObject* m_pOwner;
+	dae::GameObject* m_pOwner;
 	bool m_IsMarkedForDestroy;
 };
