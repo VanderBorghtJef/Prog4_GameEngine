@@ -14,7 +14,7 @@ TextureRenderComponent::TextureRenderComponent(dae::GameObject* pOwner, const st
 void TextureRenderComponent::Render() const {
 
 	if (m_Texture) {
-		const glm::vec3 position{ m_pOwner->GetPosition() };
+		const glm::vec3 position{ m_pOwner->GetWorldPosition() };
 		dae::Renderer::GetInstance().RenderTexture(*m_Texture, position.x, position.y);
 	}
 }

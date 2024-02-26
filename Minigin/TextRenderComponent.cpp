@@ -18,7 +18,7 @@ void TextRenderComponent::Render() const {
 
 	if (m_TextTexture)
 	{
-		const glm::vec3 position{ m_pOwner->GetPosition()};
+		const glm::vec3 position{ m_pOwner->GetWorldPosition()};
 		dae::Renderer::GetInstance().RenderTexture(*m_TextTexture, position.x, position.y);
 	}
 }

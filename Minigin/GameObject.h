@@ -8,19 +8,9 @@
 
 namespace dae
 {
-	class Texture2D;
-
-	// todo: this should become final.
 	class GameObject final
 	{
 	public:
-		virtual void Update(float elapsedSec);
-		void FixedUpdate(float elapsedSec);
-		virtual void Render() const;
-
-		void SetPosition(float x, float y);
-		glm::vec3 GetPosition();
-
 		GameObject() = default;
 		~GameObject() = default;
 		GameObject(const GameObject& other) = delete;
@@ -28,6 +18,16 @@ namespace dae
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
+		virtual void Update(float elapsedSec);
+		void FixedUpdate(float elapsedSec);
+		virtual void Render() const;
+
+		void SetLocalPosition(float x, float y);
+		void SetLocalPosition(glm::vec3 position);
+		glm::vec3 GetLocalPosition();
+		glm::vec3 GetWorldPosition();
+		bool HasPositionChanged();
+		
 		template<typename ComponentType, typename... Args>
 		ComponentType* AddComponent(Args&&... arguments) {
 			std::unique_ptr<ComponentType> component{ std::make_unique<ComponentType>(this, std::forward<Args>(arguments)...) };
@@ -84,14 +84,21 @@ namespace dae
 				});
 		}
 
+		void AttachTo(GameObject* pParent, bool keepWorldPosition);
 		bool IsMarkedForDestroy();
 		void Destroy();
 
 	private:
-		Transform m_transform{};
+		void UpdateWorldPosition();
 
+		glm::vec3 m_LocalPosition{};
+		glm::vec3 m_WorldPosition{};
+		bool m_PositionChanged{ false };
 		bool m_IsMarkedForDestroy{ false };
 
 		std::vector<std::unique_ptr<Component>> m_pComponents;
+
+		GameObject* m_pParent{ nullptr };
+		std::vector<std::unique_ptr<GameObject>> m_pChildren;
 	};
 }
