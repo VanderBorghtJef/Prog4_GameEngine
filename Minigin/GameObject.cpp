@@ -2,6 +2,8 @@
 #include "GameObject.h"
 #include "ResourceManager.h"
 #include "Renderer.h"
+#include <algorithm>
+#include <iterator>
 
 void dae::GameObject::Destroy() {
 	m_IsMarkedForDestroy = true;
@@ -14,24 +16,34 @@ bool dae::GameObject::IsMarkedForDestroy() {
 void dae::GameObject::Update(float elapsedSec){
 	// Update
 	std::for_each(m_pComponents.begin(), m_pComponents.end(), [=](auto& component) { component->Update(elapsedSec); });
+	std::for_each(m_pChildren.begin(), m_pChildren.end(), [=](auto& child) { child->Update(elapsedSec); });
 
 	// Remove components marked for destroy
 	std::for_each(m_pComponents.begin(), m_pComponents.end(), [=](auto& component) {
 		if (component->IsMarkedForDestroy()) {
 			m_pComponents.erase(std::remove(m_pComponents.begin(), m_pComponents.end(), component), m_pComponents.end());
 		}
-		});
+	});
+	// Remove children marked for destroy
+	std::for_each(m_pChildren.begin(), m_pChildren.end(), [=](auto& child) 
+	{
+		if (child->IsMarkedForDestroy()) 
+		{
+			m_pChildren.erase(std::remove(m_pChildren.begin(), m_pChildren.end(), child), m_pChildren.end());
+		}
+	});
 }
 
 void dae::GameObject::FixedUpdate(float elapsedSec) {
-	std::for_each(m_pComponents.begin(), m_pComponents.end(), [=](auto& component) { 
-		component->FixedUpdate(elapsedSec); 
-		});
+	std::for_each(m_pComponents.begin(), m_pComponents.end(), [=](auto& component) { component->FixedUpdate(elapsedSec); });
+	std::for_each(m_pChildren.begin(), m_pChildren.end(), [=](auto& child) { child->FixedUpdate(elapsedSec); });
+
 }
 
 void dae::GameObject::Render() const
 {
 	std::for_each(m_pComponents.begin(), m_pComponents.end(), [](const auto& component) { component->Render();	});
+	std::for_each(m_pChildren.begin(), m_pChildren.end(), [=](auto& child) { child->Render(); });
 }
 
 void dae::GameObject::SetLocalPosition(float x, float y)
@@ -82,7 +94,7 @@ bool dae::GameObject::HasPositionChanged()
 	return m_PositionChanged;
 }
 
-void dae::GameObject::AttachTo(GameObject* pParent, bool keepWorldPosition) {
+void dae::GameObject::AttachTo(std::shared_ptr<GameObject> pParent, bool keepWorldPosition) {
 
 	// Update hierarchy
 	std::unique_ptr<GameObject> child;
@@ -100,7 +112,7 @@ void dae::GameObject::AttachTo(GameObject* pParent, bool keepWorldPosition) {
 
 	if (m_pParent) {
 
-		// Make sure the unique pointer has a value (used first attach)
+		// Make sure the pointer has a value (used first attach)
 		if (!child.get()) {
 			child.reset(this);
 		}

@@ -84,7 +84,8 @@ namespace dae
 				});
 		}
 
-		void AttachTo(GameObject* pParent, bool keepWorldPosition);
+		void AttachTo(std::shared_ptr<GameObject> pParent, bool keepWorldPosition);
+
 		bool IsMarkedForDestroy();
 		void Destroy();
 
@@ -98,7 +99,7 @@ namespace dae
 
 		std::vector<std::unique_ptr<Component>> m_pComponents;
 
-		GameObject* m_pParent{ nullptr };
+		std::shared_ptr<GameObject> m_pParent{ nullptr };
 		std::vector<std::unique_ptr<GameObject>> m_pChildren;
 	};
 }
