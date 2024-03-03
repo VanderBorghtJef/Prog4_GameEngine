@@ -8,8 +8,8 @@ CircleRotationComponent::CircleRotationComponent(dae::GameObject* pOwner, float 
 	, m_CurrentAngle{ 0.0f }
 {}
 
-void CircleRotationComponent::Update(float elapsedSec) {
-
+void CircleRotationComponent::Update(float elapsedSec) 
+{
 	m_CurrentAngle += m_RotateSpeed * elapsedSec;
 
 	glm::vec3 pos{ m_Distance * cosf(m_CurrentAngle), m_Distance * sinf(m_CurrentAngle), 0.0f };

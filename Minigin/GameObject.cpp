@@ -20,7 +20,8 @@ void dae::GameObject::Update(float elapsedSec){
 
 	// Remove components marked for destroy
 	std::for_each(m_pComponents.begin(), m_pComponents.end(), [=](auto& component) {
-		if (component->IsMarkedForDestroy()) {
+		if (component->IsMarkedForDestroy()) 
+		{
 			m_pComponents.erase(std::remove(m_pComponents.begin(), m_pComponents.end(), component), m_pComponents.end());
 		}
 	});
@@ -109,6 +110,7 @@ void dae::GameObject::AttachTo(std::shared_ptr<GameObject> pParent, bool keepWor
 	}
 
 	m_pParent = pParent;
+
 
 	if (m_pParent) {
 
