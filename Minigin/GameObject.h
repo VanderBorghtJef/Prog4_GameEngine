@@ -29,14 +29,16 @@ namespace dae
 		bool HasPositionChanged();
 		
 		template<typename ComponentType, typename... Args>
-		ComponentType* AddComponent(Args&&... arguments) {
+		ComponentType* AddComponent(Args&&... arguments) 
+		{
 			std::unique_ptr<ComponentType> component{ std::make_unique<ComponentType>(this, std::forward<Args>(arguments)...) };
 			m_pComponents.push_back(std::move(component));
 			return GetComponent<ComponentType>();
 		}
 
 		template<typename ComponentType>
-		ComponentType* GetComponent() const {
+		ComponentType* GetComponent() const 
+		{
 			auto foundComponent = std::find_if(m_pComponents.begin(), m_pComponents.end(), [](const auto& component) {
 				return typeid(*(component.get())) == typeid(ComponentType);
 				});
@@ -48,8 +50,8 @@ namespace dae
 		}
 
 		template<typename ComponentType>
-		std::vector<ComponentType*> GetComponents() const {
-
+		std::vector<ComponentType*> GetComponents() const 
+		{
 			std::vector<ComponentType*> pComponents{};
 
 			std::for_each(m_pComponents.begin(), m_pComponents.end(), [&](const auto& component) {
@@ -62,7 +64,8 @@ namespace dae
 		}
 
 		template<typename ComponentType>
-		bool RemoveComponent() const {
+		bool RemoveComponent() const 
+		{
 			auto foundComponent = std::find_if(m_pComponents.begin(), m_pComponents.end(), [](const auto& component) {
 				return typeid(*(component.get())) == typeid(ComponentType);
 				});
@@ -75,7 +78,8 @@ namespace dae
 		}
 
 		template<typename ComponentType>
-		void RemoveComponents() const {
+		void RemoveComponents() const 
+		{
 
 			std::for_each(m_pComponents.begin(), m_pComponents.end(), [&](auto& component) {
 				if (typeid(*(component.get())) == typeid(ComponentType)) {
@@ -84,7 +88,7 @@ namespace dae
 				});
 		}
 
-		void AttachTo(std::shared_ptr<GameObject> pParent, bool keepWorldPosition);
+		void AttachTo(GameObject* pParent, bool keepWorldPosition);
 
 		bool IsMarkedForDestroy();
 		void Destroy();
@@ -99,7 +103,7 @@ namespace dae
 
 		std::vector<std::unique_ptr<Component>> m_pComponents;
 
-		std::shared_ptr<GameObject> m_pParent{ nullptr };
+		GameObject* m_pParent{ nullptr };
 		std::vector<std::unique_ptr<GameObject>> m_pChildren;
 	};
 }

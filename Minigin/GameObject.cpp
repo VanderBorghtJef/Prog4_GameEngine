@@ -5,15 +5,18 @@
 #include <algorithm>
 #include <iterator>
 
-void dae::GameObject::Destroy() {
+void dae::GameObject::Destroy() 
+{
 	m_IsMarkedForDestroy = true;
 }
 
-bool dae::GameObject::IsMarkedForDestroy() {
+bool dae::GameObject::IsMarkedForDestroy() 
+{
 	return m_IsMarkedForDestroy;
 }
 
-void dae::GameObject::Update(float elapsedSec){
+void dae::GameObject::Update(float elapsedSec)
+{
 	// Update
 	std::for_each(m_pComponents.begin(), m_pComponents.end(), [=](auto& component) { component->Update(elapsedSec); });
 	std::for_each(m_pChildren.begin(), m_pChildren.end(), [=](auto& child) { child->Update(elapsedSec); });
@@ -35,7 +38,8 @@ void dae::GameObject::Update(float elapsedSec){
 	});
 }
 
-void dae::GameObject::FixedUpdate(float elapsedSec) {
+void dae::GameObject::FixedUpdate(float elapsedSec) 
+{
 	std::for_each(m_pComponents.begin(), m_pComponents.end(), [=](auto& component) { component->FixedUpdate(elapsedSec); });
 	std::for_each(m_pChildren.begin(), m_pChildren.end(), [=](auto& child) { child->FixedUpdate(elapsedSec); });
 
@@ -66,7 +70,8 @@ glm::vec3 dae::GameObject::GetLocalPosition() const
 glm::vec3 dae::GameObject::GetWorldPosition() 
 {
 
-	if (HasPositionChanged()) {
+	if (HasPositionChanged()) 
+	{
 		UpdateWorldPosition();
 	}
 	return m_WorldPosition;
@@ -74,11 +79,14 @@ glm::vec3 dae::GameObject::GetWorldPosition()
 
 void dae::GameObject::UpdateWorldPosition() 
 {
-	if (HasPositionChanged()) {
-		if (m_pParent) {
+	if (HasPositionChanged()) 
+	{
+		if (m_pParent) 
+		{
 			m_WorldPosition = m_pParent->GetWorldPosition() + m_LocalPosition;
 		}
-		else {
+		else 
+		{
 			m_WorldPosition = m_LocalPosition;
 		}
 	}
@@ -88,20 +96,23 @@ void dae::GameObject::UpdateWorldPosition()
 bool dae::GameObject::HasPositionChanged() 
 {
 
-	if (m_pParent) {
+	if (m_pParent) 
+	{
 		m_PositionChanged = m_PositionChanged || m_pParent->HasPositionChanged();
 	}
 
 	return m_PositionChanged;
 }
 
-void dae::GameObject::AttachTo(std::shared_ptr<GameObject> pParent, bool keepWorldPosition) {
-
+void dae::GameObject::AttachTo(GameObject* pParent, bool keepWorldPosition) 
+{
 	// Update hierarchy
 	std::unique_ptr<GameObject> child;
 
-	if (m_pParent) {
-		auto childIt = std::find_if(m_pParent->m_pChildren.begin(), m_pParent->m_pChildren.end(), [&](const auto& child) {
+	if (m_pParent) 
+	{
+		auto childIt = std::find_if(m_pParent->m_pChildren.begin(), m_pParent->m_pChildren.end(), [&](const auto& child) 
+			{
 			return child.get() == this;
 			});
 
@@ -112,10 +123,12 @@ void dae::GameObject::AttachTo(std::shared_ptr<GameObject> pParent, bool keepWor
 	m_pParent = pParent;
 
 
-	if (m_pParent) {
+	if (m_pParent) 
+	{
 
-		// Make sure the pointer has a value (used first attach)
-		if (!child.get()) {
+		// Make sure the unique pointer has a value (used first attach)
+		if (!child.get()) 
+		{
 			child.reset(this);
 		}
 
@@ -124,12 +137,14 @@ void dae::GameObject::AttachTo(std::shared_ptr<GameObject> pParent, bool keepWor
 
 
 	// Update position
-	if (m_pParent == nullptr) {
+	if (m_pParent == nullptr) 
+	{
 		SetLocalPosition(GetWorldPosition());
 		return;
 	}
 
-	if (keepWorldPosition) {
+	if (keepWorldPosition) 
+	{
 		SetLocalPosition(m_LocalPosition - m_pParent->GetWorldPosition());
 	}
 

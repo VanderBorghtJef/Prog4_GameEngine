@@ -15,5 +15,4 @@ void CircleRotationComponent::Update(float elapsedSec)
 	glm::vec3 pos{ m_Distance * cosf(m_CurrentAngle), m_Distance * sinf(m_CurrentAngle), 0.0f };
 
 	m_pOwner->SetLocalPosition(pos);
-
 }

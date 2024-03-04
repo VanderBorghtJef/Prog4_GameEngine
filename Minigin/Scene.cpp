@@ -1,5 +1,4 @@
 #include "Scene.h"
-#include "GameObject.h"
 
 #include <algorithm>
 
@@ -7,46 +6,44 @@ using namespace dae;
 
 unsigned int Scene::m_idCounter = 0;
 
-Scene::Scene(const std::string& name) : m_name(name) {}
+Scene::Scene(const std::string& name)
+	: m_name(name)
+	, m_SceneRoot{new GameObject()}
+{}
 
-Scene::~Scene() = default;
-
-void Scene::Add(std::shared_ptr<GameObject> object)
+Scene::~Scene()
 {
-	m_objects.emplace_back(std::move(object));
+	delete m_SceneRoot;
 }
 
-void Scene::Remove(std::shared_ptr<GameObject> object)
+void Scene::Add(GameObject* object)
 {
-	m_objects.erase(std::remove(m_objects.begin(), m_objects.end(), object), m_objects.end());
+	object->AttachTo(m_SceneRoot, true);
+}
+
+void Scene::Remove(GameObject* object)
+{
+	object->AttachTo(nullptr, true);
 }
 
 void Scene::RemoveAll()
 {
-	m_objects.clear();
+	delete m_SceneRoot;
+	m_SceneRoot = new GameObject();
 }
 
 void Scene::Update(float elapsedSec)
 {
-	for(auto& object : m_objects)
-	{
-		object->Update(elapsedSec);
-	}
+	m_SceneRoot->Update(elapsedSec);
 }
 
 void Scene::FixedUpdate(float elapsedSec)
 {
-	for (auto object : m_objects)
-	{
-		object->FixedUpdate(elapsedSec);
-	}
+	m_SceneRoot->FixedUpdate(elapsedSec);
 }
 
 void Scene::Render() const
 {
-	for (const auto& object : m_objects)
-	{
-		object->Render();
-	}
+	m_SceneRoot->Render();
 }
 
